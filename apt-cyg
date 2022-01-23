@@ -2171,6 +2171,11 @@ function parse_args ()
   while [ $# -gt 0 ]; do
     case "$1" in
       
+      --reinstall)
+        OPT_REINSTALL="$1"
+        shift
+        ;;
+
       --ag)
         OPT_AG="$1"
         shift
@@ -2478,12 +2483,16 @@ function apt-cyg-install ()
   
   for pkg do
     if package_db-is_registered "$pkg"; then
-      echo Package $pkg is already installed, skipping
-      continue
+      if [ -z "$OPT_REINSTALL" ]; then
+        echo Package $pkg is already installed, skipping
+        continue
+      else
+        echo Package $pkg is already installed, reinstalling
+      fi
     fi
     verbose 0 ""
     verbose 0 "Installing $pkg"
-    
+
     # look for package and save desc file
     
     mkdirp "release/$pkg"
